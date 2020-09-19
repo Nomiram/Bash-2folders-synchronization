@@ -4,6 +4,7 @@ while test 0 -eq 0; do
 date
 ##копирование папок и файлов
 echo folders
+#цикл по найденным в папке $1 подпапкам
 for i in $(find "$1" -type d -printf "%p ")
 do
 if (test $i = $1)
@@ -11,6 +12,7 @@ then
 continue
 fi
 echo synchronization $i
+#если подпапка из 1 найдена в 2, то ничего не делать, иначе копировать рекурсивно папку из 1 в 2
 if (test -d $2/${i##$1})
 then
 echo found
@@ -21,6 +23,7 @@ echo done
 fi
 done
 echo files
+#цикл по найденным в папке $1 файлам
 for i in $(find "$1" -type f -printf '%p ')
 do
 echo synchronization "$i"
@@ -36,6 +39,7 @@ done
 ##Удаление лишних папок и  файлов
 echo check and remove trash
 echo folders
+#цикл по найденным в папке $2 подпапкам
 for i in $(find "$2" -type d -printf "%p ")
 do
 if (test $i = $1)
@@ -53,6 +57,7 @@ echo done
 fi
 done
 echo files
+#цикл по найденным в папке $1 файлам
 for i in $(find "$2" -type f -printf '%p ')
 do
 echo synchronization "$i"
