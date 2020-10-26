@@ -1,75 +1,82 @@
 #!/bin/sh
 echo synchronization $1 and $2
 while test 0 -eq 0; do
-date
-##копирование папок и файлов
-echo folders
-#цикл по найденным в папке $1 подпапкам
-for i in $(find "$1" -type d -printf "%p ")
-do
-if (test $i = $1)
-then
-continue
-fi
-echo synchronization $i
-#если подпапка из 1 найдена в 2, то ничего не делать, иначе копировать рекурсивно папку из 1 в 2
-if (test -d $2/${i##$1})
-then
-echo found
-else
-echo copy to $2${i##$1} ...
-cp --interactive -r $i $(dirname $2${i##$1})
-echo done
-fi
-done
-echo files
-#цикл по найденным в папке $1 файлам
-for i in $(find "$1" -type f -printf '%p ')
-do
-echo synchronization "$i"
-if (test -f "$2/${i##$1}")
-then
-echo found
-else
-echo copy to $2${i##$1} ...
-cp -i "$i" "$2${i##$1}"
-echo done
-fi
-done
-##Удаление лишних папок и  файлов
-echo check and remove trash
-echo folders
-#цикл по найденным в папке $2 подпапкам
-for i in $(find "$2" -type d -printf "%p ")
-do
-if (test $i = $1)
-then
-continue
-fi
-echo synchronization $i
-if (test -d $1/${i##$2})
-then
-echo found
-else
-echo delete $i ...
-rm -i -r $i
-echo done
-fi
-done
-echo files
-#цикл по найденным в папке $1 файлам
-for i in $(find "$2" -type f -printf '%p ')
-do
-echo synchronization "$i"
-if (test -f "$1/${i##$2}")
-then
-echo found
-else
-echo delete $i ...
-rm -i $i
-echo done
-fi
-done
-echo waitind 1m
-sleep 1m
+        date
+        ##копирование папок и файлов
+        echo folders
+        #set test1=$(find "$1" -type d -printf "\'%p\' ")
+        echo $(find "$1" -type d -printf "'%p' ")
+        echo 123 $test1
+        #exit
+        #цикл по найденным в папке $1 подпапкам
+        for i in $(find "$1" -type d -printf "'%p' ")
+        do
+                if (test "$i" = "$1")
+                then
+                        continue
+                fi
+                echo synchronization $i
+                #если подпапка из 1 найдена в 2, то ничего не делать, иначе копировать рекурсивно папку из 1 в 2
+                if (test -d $2/${i##$1})
+                then
+                        echo found
+                else
+                        echo copy to $2${i##$1} ...
+                        cp -ir $i $(dirname $2${i##$1})
+                        echo done
+                fi
+        done
+        echo files
+        #цикл по найденным в папке $1 файлам
+        for i in $(find "$1" -type f -printf '%p ')
+        do
+                echo synchronization "$i"
+                #если файл из 1 найден в 2, то ничего не делать, иначе копировать файл из 1 в 2
+                if (test -f "$2/${i##$1}")
+                then
+                        echo found
+                else
+                        echo copy to $2${i##$1} ...
+                        cp -i "$i" "$2${i##$1}"
+                        echo done
+                fi
+        done
+        ##Удаление лишних папок и  файлов
+        echo check and remove trash
+        echo folders
+        #цикл по найденным в папке $2 подпапкам
+        for i in $(find "$2" -type d -printf "%p ")
+        do
+                if (test $i = $1)
+                then
+                        continue
+                fi
+                echo synchronization $i
+                #если подпапка из 2 найдена в 1, то ничего не делать, иначе удалять рекурсивно папку в 2
+                if (test -d $1/${i##$2})
+                then
+                        echo found
+                else
+                        echo delete $i ...
+                        rm -i -r $i
+                        echo done
+                fi
+        done
+        echo files
+        #цикл по найденным в папке $2 файлам
+        for i in $(find "$2" -type f -printf '%p ')
+                do
+                        echo synchronization "$i"
+                #если файл из 2 найден в 1, то ничего не делать, иначе удалить файл в 2
+                if (test -f "$1/${i##$2}")
+                then
+                        echo found
+                else
+                        echo delete $i ...
+                        rm -i $i
+                        echo done
+                fi
+        done
+        echo waitind 1m
+        sleep 1m
 done
